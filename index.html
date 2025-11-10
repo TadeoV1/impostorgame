@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Juego del Impostor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: #020617;
+      padding: 1.8rem;
+      border-radius: 1.1rem;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+      max-width: 420px;
+      width: 100%;
+      border: 1px solid #1f2937;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      text-align: center;
+      margin-bottom: 0.2rem;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      text-align: center;
+      color: #9ca3af;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 0.8rem;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    input[type="number"]:focus,
+    select:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px #38bdf8;
+    }
+
+    button {
+      margin-top: 1rem;
+      width: 100%;
+      padding: 0.65rem 0.8rem;
+      border-radius: 0.6rem;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
+    }
+
+    button:active {
+      transform: scale(0.97);
+      box-shadow: none;
+    }
+
+    #btnJugar {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      box-shadow: 0 10px 25px rgba(34, 197, 94, 0.35);
+    }
+
+    #btnMostrar {
+      background: #38bdf8;
+      color: #020617;
+      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.35);
+    }
+
+    #btnOcultar {
+      background: #4b5563;
+      color: #e5e7eb;
+      margin-top: 0.5rem;
+    }
+
+    #btnReiniciar {
+      background: transparent;
+      border: 1px solid #4b5563;
+      color: #9ca3af;
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .mensaje {
+      margin-top: 0.6rem;
+      font-size: 0.8rem;
+      color: #fbbf24;
+      min-height: 1rem;
+    }
+
+    .juego {
+      margin-top: 1.2rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid #1f2937;
+    }
+
+    .oculto {
+      display: none;
+    }
+
+    #turno {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+    }
+
+    #restantes {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-top: 0.4rem;
+    }
+
+    #resultado {
+      margin-top: 0.9rem;
+      text-align: center;
+      min-height: 2.5rem;
+      border-radius: 0.75rem;
+      padding: 0.7rem 0.5rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .palabra {
+      background: #0f172a;
+      color: #e5e7eb;
+      border: 1px solid #38bdf8;
+    }
+
+    .impostor {
+      background: #7f1d1d;
+      color: #fee2e2;
+      border: 1px solid #ef4444;
+    }
+
+    .notas {
+      font-size: 0.7rem;
+      color: #6b7280;
+      margin-top: 0.8rem;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Juego del Impostor</h1>
+    <p class="subtitle">Esta página solo elige la palabra y quién será el impostor.</p>
+
+    <label for="numJugadores">¿Cuántos jugadores son?</label>
+    <input id="numJugadores" type="number" min="3" max="20" value="5" />
+
+    <label for="tema">Temática de las palabras</label>
+    <select id="tema">
+      <option value="comida">Comida</option>
+      <option value="restaurantes">Restaurantes</option>
+      <option value="futbolistas">Jugadores de fútbol</option>
+      <option value="lugares">Lugares / ciudades</option>
+      <option value="peliculas">Películas</option>
+      <option value="videojuegos">Videojuegos</option>
+      <option value="cosasCasa">Cosas de la casa</option>
+      <option value="animales">Animales</option>
+    </select>
+
+    <button id="btnJugar">JUGAR</button>
+
+    <div id="mensaje" class="mensaje"></div>
+
+    <div id="seccionJuego" class="juego oculto">
+      <div id="turno"></div>
+
+      <button id="btnMostrar">Mostrar palabra</button>
+      <button id="btnOcultar" disabled>Ocultar y pasar al siguiente</button>
+
+      <div id="resultado"></div>
+      <div id="restantes"></div>
+
+      <button id="btnReiniciar">Nueva partida</button>
+
+      <p class="notas">
+        Instrucciones rápidas:<br />
+        1. Configuren jugadores y tema, luego toquen <strong>JUGAR</strong>.<br />
+        2. Pasa el teléfono al Jugador 1. Solo él toca <strong>Mostrar palabra</strong> y luego <strong>Ocultar</strong>.<br />
+        3. Repitan hasta que todos vean su pantalla.<br />
+        4. Uno verá la palabra <strong>IMPOSTOR</strong>. ¡Él tendrá que adivinar la palabra secreta jugando en físico!
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const temas = {
+      comida: [
+        "Pizza", "Hamburguesa", "Tacos", "Sushi", "Ensalada",
+        "Hot dog", "Quesadillas", "Pasta", "Pozole", "Tamales",
+        "Burrito", "Chilaquiles", "Hamburguesa doble", "Torta", "Helado"
+      ],
+      restaurantes: [
+        "McDonald's", "Burger King", "Domino's", "KFC", "Subway",
+        "Starbucks", "Taco Bell", "Little Caesars", "Carl's Jr.",
+        "Wendy's", "Pizza Hut", "Chili's", "Buffalo Wild Wings"
+      ],
+      futbolistas: [
+        "Lionel Messi", "Cristiano Ronaldo", "Kylian Mbappé", "Neymar",
+        "Erling Haaland", "Robert Lewandowski", "Kevin De Bruyne",
+        "Vinícius Jr.", "Karim Benzema", "Luis Suárez", "Sergio Ramos",
+        "Luka Modrić", "Mohamed Salah", "Antoine Griezmann"
+      ],
+      lugares: [
+        "París", "Londres", "Tokio", "Nueva York", "Ciudad de México",
+        "Madrid", "Roma", "Barcelona", "Dubai", "Río de Janeiro",
+        "Los Ángeles", "Sídney", "Cancún", "Las Vegas"
+      ],
+      peliculas: [
+        "Titanic", "Avatar", "Harry Potter", "El Señor de los Anillos",
+        "Avengers", "Spider-Man", "Jurassic Park", "Toy Story",
+        "El Rey León", "Rápidos y Furiosos", "Matrix", "Frozen",
+        "Intensamente", "Coco"
+      ],
+      videojuegos: [
+        "Fortnite", "Minecraft", "FIFA", "Call of Duty", "League of Legends",
+        "Valorant", "Among Us", "GTA V", "Roblox", "Clash Royale",
+        "Rocket League", "Overwatch", "Pokemon", "Super Mario"
+      ],
+      cosasCasa: [
+        "Sofá", "Televisión", "Mesa", "Silla", "Refrigerador",
+        "Microondas", "Cama", "Espejo", "Ventilador", "Lámpara",
+        "Puerta", "Cortinas", "Almohada", "Computadora"
+      ],
+      animales: [
+        "Perro", "Gato", "León", "Tigre", "Elefante", "Caballo",
+        "Lobo", "Delfín", "Tiburón", "Águila", "Conejo", "Rana",
+        "Panda", "Oso polar", "Jirafa"
+      ]
+    };
+
+    const numJugadoresInput = document.getElementById("numJugadores");
+    const temaSelect = document.getElementById("tema");
+    const btnJugar = document.getElementById("btnJugar");
+    const mensaje = document.getElementById("mensaje");
+    const seccionJuego = document.getElementById("seccionJuego");
+    const turno = document.getElementById("turno");
+    const btnMostrar = document.getElementById("btnMostrar");
+    const btnOcultar = document.getElementById("btnOcultar");
+    const resultado = document.getElementById("resultado");
+    const restantes = document.getElementById("restantes");
+    const btnReiniciar = document.getElementById("btnReiniciar");
+
+    let palabraSecreta = "";
+    let indiceImpostor = 0;
+    let totalJugadores = 0;
+    let jugadorActual = 0;
+    let juegoActivo = false;
+
+    function actualizarEstadoTurno() {
+      if (jugadorActual < totalJugadores) {
+        turno.textContent = "Turno del Jugador " + (jugadorActual + 1);
+        const faltan = totalJugadores - jugadorActual;
+        restantes.textContent = "Faltan " + faltan + " jugador(es) por ver su pantalla.";
+      } else {
+        turno.textContent = "Ya todos vieron su palabra.";
+        restantes.textContent = "";
+        btnMostrar.disabled = true;
+        btnOcultar.disabled = true;
+        juegoActivo = false;
+      }
+    }
+
+    btnJugar.addEventListener("click", () => {
+      const valor = parseInt(numJugadoresInput.value, 10);
+
+      if (isNaN(valor) || valor < 3) {
+        mensaje.textContent = "Pon al menos 3 jugadores para que tenga sentido.";
+        seccionJuego.classList.add("oculto");
+        return;
+      }
+
+      if (valor > 20) {
+        mensaje.textContent = "Máximo 20 jugadores para que no se descontrole 😅.";
+        seccionJuego.classList.add("oculto");
+        return;
+      }
+
+      const tema = temaSelect.value;
+      const lista = temas[tema];
+
+      if (!lista || lista.length === 0) {
+        mensaje.textContent = "No hay palabras para ese tema.";
+        seccionJuego.classList.add("oculto");
+        return;
+      }
+
+      totalJugadores = valor;
+      palabraSecreta = lista[Math.floor(Math.random() * lista.length)];
+      indiceImpostor = Math.floor(Math.random() * totalJugadores);
+      jugadorActual = 0;
+      juegoActivo = true;
+
+      mensaje.textContent = "Pasa el teléfono al Jugador 1 y toca “Mostrar palabra”.";
+      resultado.textContent = "";
+      resultado.className = "";
+      btnMostrar.disabled = false;
+      btnOcultar.disabled = true;
+
+      seccionJuego.classList.remove("oculto");
+      actualizarEstadoTurno();
+    });
+
+    btnMostrar.addEventListener("click", () => {
+      if (!juegoActivo || jugadorActual >= totalJugadores) return;
+
+      if (jugadorActual === indiceImpostor) {
+        resultado.textContent = "IMPOSTOR";
+        resultado.classList.remove("palabra");
+        resultado.classList.add("impostor");
+      } else {
+        resultado.textContent = palabraSecreta;
+        resultado.classList.remove("impostor");
+        resultado.classList.add("palabra");
+      }
+
+      btnMostrar.disabled = true;
+      btnOcultar.disabled = false;
+    });
+
+    btnOcultar.addEventListener("click", () => {
+      if (!juegoActivo) return;
+      resultado.textContent = "";
+      resultado.className = "";
+      jugadorActual++;
+      btnMostrar.disabled = false;
+      btnOcultar.disabled = true;
+      actualizarEstadoTurno();
+    });
+
+    btnReiniciar.addEventListener("click", () => {
+      juegoActivo = false;
+      seccionJuego.classList.add("oculto");
+      resultado.textContent = "";
+      resultado.className = "";
+      mensaje.textContent = "Configura otra partida y presiona JUGAR.";
+    });
+  </script>
+</body>
+</html>
