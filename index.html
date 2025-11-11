@@ -105,6 +105,13 @@
       margin-top: 0.5rem;
     }
 
+    #btnRevelar {
+      background: #f97316;
+      color: #111827;
+      margin-top: 0.8rem;
+      box-shadow: 0 8px 20px rgba(249, 115, 22, 0.35);
+    }
+
     #btnReiniciar {
       background: transparent;
       border: 1px solid #4b5563;
@@ -172,6 +179,13 @@
       border: 1px solid #ef4444;
     }
 
+    #resumenFinal {
+      margin-top: 0.8rem;
+      font-size: 0.9rem;
+      text-align: center;
+      color: #e5e7eb;
+    }
+
     .notas {
       font-size: 0.7rem;
       color: #6b7280;
@@ -213,6 +227,10 @@
       <div id="resultado"></div>
       <div id="restantes"></div>
 
+      <!-- Nuevo: botón para revelar impostor y palabra -->
+      <button id="btnRevelar" class="oculto">Mostrar impostor</button>
+      <div id="resumenFinal"></div>
+
       <button id="btnReiniciar">Nueva partida</button>
 
       <p class="notas">
@@ -220,7 +238,7 @@
         1. Configuren jugadores y tema, luego toquen <strong>JUGAR</strong>.<br />
         2. Pasa el teléfono al Jugador 1. Solo él toca <strong>Mostrar palabra</strong> y luego <strong>Ocultar</strong>.<br />
         3. Repitan hasta que todos vean su pantalla.<br />
-        4. Uno verá la palabra <strong>IMPOSTOR</strong>. ¡Él tendrá que adivinar la palabra secreta jugando en físico!
+        4. Uno verá la palabra <strong>IMPOSTOR</strong>. Al final, toquen <strong>Mostrar impostor</strong> para ver quién era y cuál era la palabra secreta.
       </p>
     </div>
   </div>
@@ -281,6 +299,8 @@
     const btnOcultar = document.getElementById("btnOcultar");
     const resultado = document.getElementById("resultado");
     const restantes = document.getElementById("restantes");
+    const btnRevelar = document.getElementById("btnRevelar");
+    const resumenFinal = document.getElementById("resumenFinal");
     const btnReiniciar = document.getElementById("btnReiniciar");
 
     let palabraSecreta = "";
@@ -296,10 +316,12 @@
         restantes.textContent = "Faltan " + faltan + " jugador(es) por ver su pantalla.";
       } else {
         turno.textContent = "Ya todos vieron su palabra.";
-        restantes.textContent = "";
+        restantes.textContent = "Ahora pueden tocar \"Mostrar impostor\".";
         btnMostrar.disabled = true;
         btnOcultar.disabled = true;
         juegoActivo = false;
+        // mostrar botón para revelar impostor y palabra
+        btnRevelar.classList.remove("oculto");
       }
     }
 
@@ -339,6 +361,11 @@
       btnMostrar.disabled = false;
       btnOcultar.disabled = true;
 
+      // reiniciar resumen final y botón revelar
+      btnRevelar.classList.add("oculto");
+      btnRevelar.disabled = false;
+      resumenFinal.textContent = "";
+
       seccionJuego.classList.remove("oculto");
       actualizarEstadoTurno();
     });
@@ -370,12 +397,25 @@
       actualizarEstadoTurno();
     });
 
+    // Nuevo: muestra quién fue el impostor y la palabra secreta
+    btnRevelar.addEventListener("click", () => {
+      if (totalJugadores === 0) return;
+      const numImpostor = indiceImpostor + 1;
+      resumenFinal.textContent =
+        "El impostor fue el Jugador " + numImpostor +
+        " y la palabra secreta era: " + palabraSecreta + ".";
+      btnRevelar.disabled = true;
+    });
+
     btnReiniciar.addEventListener("click", () => {
       juegoActivo = false;
       seccionJuego.classList.add("oculto");
       resultado.textContent = "";
       resultado.className = "";
       mensaje.textContent = "Configura otra partida y presiona JUGAR.";
+      btnRevelar.classList.add("oculto");
+      btnRevelar.disabled = false;
+      resumenFinal.textContent = "";
     });
   </script>
 </body>
